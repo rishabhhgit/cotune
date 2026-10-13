@@ -1,0 +1,204 @@
+:root {
+  --bg: #121216;
+  --surface: #1c1c22;
+  --border: #2a2a33;
+  --text: #ececf1;
+  --muted: #9a9aa8;
+  --accent: #7c5cff;
+  --error: #ff6b6b;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--muted);
+}
+
+label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+input:not([type="checkbox"]) {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+button {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+button:hover {
+  border-color: var(--muted);
+}
+
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+button.ghost {
+  border: none;
+  background: none;
+  color: var(--muted);
+}
+
+.row,
+.invite,
+.call-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.call-controls {
+  flex-wrap: wrap;
+}
+
+.or,
+.hint,
+.status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.or {
+  text-align: center;
+}
+
+.error {
+  margin: 0;
+  color: var(--error);
+}
+
+#people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#people li {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 12px;
+}
+
+#tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+#tiles:empty {
+  display: none;
+}
+
+.tile {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+
+.tile video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tile span {
+  position: absolute;
+  bottom: 4px;
+  left: 6px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 0.6);
+  font-size: 11px;
+}
+
+#chat {
+  flex: 1;
+  min-height: 160px;
+}
+
+#messages {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  list-style: none;
+}
+
+#messages li {
+  margin-bottom: 6px;
+  overflow-wrap: anywhere;
+}
+
+#messages li b {
+  color: var(--accent);
+}
+
+#messages li.system {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+#messages li.system a {
+  color: var(--accent);
+}

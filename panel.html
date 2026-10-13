@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cotune</title>
+    <link rel="stylesheet" href="panel.css" />
+  </head>
+  <body>
+    <header>
+      <strong>Cotune</strong>
+      <button id="hide" class="ghost" title="Hide panel">✕</button>
+    </header>
+
+    <p id="video-status" class="status">Looking for a video… press play on the movie.</p>
+
+    <section id="lobby">
+      <label>
+        Your name
+        <input id="name" maxlength="24" placeholder="e.g. Suryansh" autocomplete="off" />
+      </label>
+      <button id="start" class="primary">Start a party</button>
+      <div class="or">or join one</div>
+      <div class="row">
+        <input id="code" placeholder="Room code" autocomplete="off" />
+        <button id="join">Join</button>
+      </div>
+      <p id="lobby-error" class="error" hidden></p>
+    </section>
+
+    <section id="room" hidden>
+      <div class="invite">
+        <input id="invite" readonly />
+        <button id="copy">Copy link</button>
+      </div>
+      <p class="hint">Friends open this link (with Cotune installed) to join.</p>
+      <ul id="people"></ul>
+
+      <div id="tiles"></div>
+      <div class="call-controls">
+        <button id="call-join" class="primary">Join call</button>
+        <button id="mic" hidden>Mute</button>
+        <button id="cam" hidden>Camera off</button>
+        <button id="call-leave" hidden>Leave call</button>
+      </div>
+      <label class="check" id="smart-mic-row" hidden>
+        <input type="checkbox" id="smart-mic" />
+        Mute my mic while the movie plays
+      </label>
+      <p id="call-error" class="error" hidden></p>
+    </section>
+
+    <section id="chat" hidden>
+      <ol id="messages"></ol>
+      <form id="chat-form" class="row">
+        <input id="chat-input" placeholder="Say something…" autocomplete="off" maxlength="500" />
+        <button>Send</button>
+      </form>
+    </section>
+
+    <script src="vendor/peerjs.min.js"></script>
+    <script type="module" src="panel.js"></script>
+  </body>
+</html>

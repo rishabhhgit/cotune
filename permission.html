@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cotune: camera and mic</title>
+    <link rel="stylesheet" href="panel.css" />
+    <style>
+      body {
+        max-width: 420px;
+        margin: 10vh auto;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Allow camera and microphone</h2>
+    <p class="status">
+      Brave/Chrome can't show the permission prompt inside the Cotune panel, so allow it once here.
+      After that, go back to the movie tab and press <b>Join call</b> again.
+    </p>
+    <button id="grant" class="primary">Allow camera and mic</button>
+    <p id="result"></p>
+    <script src="permission.js"></script>
+  </body>
+</html>
