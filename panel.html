@@ -16,7 +16,7 @@
     <section id="lobby">
       <label>
         Your name
-        <input id="name" maxlength="24" placeholder="e.g. Suryansh" autocomplete="off" />
+        <input id="name" maxlength="24" placeholder="e.g. Rishabh" autocomplete="off" />
       </label>
       <button id="start" class="primary">Start a party</button>
       <div class="or">or join one</div>
@@ -40,13 +40,22 @@
         <button id="call-join" class="primary">Join call</button>
         <button id="mic" hidden>Mute</button>
         <button id="cam" hidden>Camera off</button>
+        <button id="screen" hidden>Share screen</button>
         <button id="call-leave" hidden>Leave call</button>
+        <button id="chat-toggle" class="overlay-only">Hide chat</button>
       </div>
       <label class="check" id="smart-mic-row" hidden>
         <input type="checkbox" id="smart-mic" />
         Mute my mic while the movie plays
       </label>
+      <div id="screen-tools" hidden>
+        <p class="hint">You're sharing your screen.</p>
+        <div class="row">
+          <button id="screen-switch" title="Switch to another screen or window without stopping">Change screen</button>
+        </div>
+      </div>
       <p id="call-error" class="error" hidden></p>
+      <button id="party-leave" class="ghost">Leave party</button>
     </section>
 
     <section id="chat" hidden>
@@ -57,7 +66,21 @@
       </form>
     </section>
 
-    <script src="vendor/peerjs.min.js"></script>
+    <div id="viewer" hidden>
+      <div id="viewer-bar">
+        <button id="viewer-back" class="primary">← Back</button>
+        <span id="viewer-title"></span>
+        <button id="viewer-pip" title="Float it in a small window">Pop out</button>
+      </div>
+      <video id="viewer-video" autoplay playsinline muted></video>
+      <div id="viewer-participants"></div>
+      <div id="viewer-controls" hidden>
+        <button id="viewer-mic">Mute</button>
+        <button id="viewer-cam">Camera off</button>
+        <button id="viewer-screen">Stop sharing</button>
+      </div>
+    </div>
+
     <script type="module" src="panel.js"></script>
   </body>
 </html>

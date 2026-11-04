@@ -160,6 +160,15 @@ button.ghost {
   object-fit: cover;
 }
 
+.tile.screen {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 9;
+}
+
+.tile.screen video {
+  object-fit: contain;
+}
+
 .tile span {
   position: absolute;
   bottom: 4px;
@@ -201,4 +210,218 @@ button.ghost {
 
 #messages li.system a {
   color: var(--accent);
+}
+
+/* Compact overlay shown on top of a fullscreen player. */
+
+.overlay-only {
+  display: none;
+}
+
+html:has(body.overlay),
+body.overlay {
+  height: auto;
+  background: transparent;
+}
+
+body.overlay {
+  gap: 6px;
+  padding: 0;
+}
+
+body.overlay :is(header, #video-status, #lobby, .invite, .hint, #people, #call-join, #call-leave, #party-leave, #smart-mic-row, #screen-tools) {
+  display: none;
+}
+
+body.overlay .call-controls {
+  display: flex !important;
+}
+
+body.overlay .call-controls button:not(#call-join):not(#call-leave) {
+  display: inline-block !important;
+}
+
+body.overlay .overlay-only {
+  display: inline-block;
+}
+
+body.overlay .call-controls button {
+  padding: 4px 8px;
+  background: rgb(18 18 22 / 0.75);
+  font-size: 12px;
+}
+
+body.overlay #chat {
+  flex: none;
+  min-height: 0;
+}
+
+body.overlay.chat-hidden #chat {
+  display: none;
+}
+
+body.overlay #messages {
+  max-height: 160px;
+  background: rgb(18 18 22 / 0.75);
+}
+
+body.overlay #chat-input {
+  background: rgb(18 18 22 / 0.75);
+}
+
+#screen-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tile-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.tile:hover .tile-actions,
+.tile:focus-within .tile-actions {
+  opacity: 1;
+}
+
+.tile-actions button {
+  padding: 3px 8px;
+  font-size: 11px;
+  background: rgb(0 0 0 / 0.7);
+}
+
+/* Viewer: the shared screen takes the whole page; Esc or the button goes back. */
+#viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+#viewer[hidden] {
+  display: none;
+}
+
+#viewer-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+#viewer-title {
+  flex: 1;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#viewer-video {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+#viewer-participants {
+  position: absolute;
+  top: 50px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  pointer-events: auto;
+  z-index: 20;
+}
+
+#viewer-participants:empty {
+  display: none;
+}
+
+.mini-tile {
+  position: relative;
+  width: 140px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.mini-tile video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mini-tile span {
+  position: absolute;
+  bottom: 4px;
+  left: 6px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 0.6);
+  font-size: 10px;
+  max-width: calc(100% - 12px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#viewer-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgb(18 18 22 / 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  z-index: 20;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+#viewer-controls[hidden] {
+  display: none;
+}
+
+#viewer-controls button {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+#viewer-controls button:hover {
+  border-color: var(--muted);
+  background: #282832;
+}
+
+body.expanded {
+  padding: 0;
+}
+
+body.expanded > :not(#viewer):not(script) {
+  display: none !important;
 }

@@ -1,10 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Cotune Watch Party",
-  "version": "0.1.0",
-  "description": "Watch any HTML5 video in sync with friends, with chat and video calls.",
-  "permissions": ["storage", "scripting"],
-  "host_permissions": ["<all_urls>"],
+  "version": "0.6.0",
+  "description": "Watch any HTML5 video in sync with friends, with chat, video calls and screen sharing.",
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "background.js"
   },
@@ -13,8 +18,25 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "fullscreen-hook.js"
+      ],
+      "all_frames": true,
+      "match_about_blank": true,
+      "match_origin_as_fallback": true,
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
       "all_frames": true,
       "match_about_blank": true,
       "match_origin_as_fallback": true,
@@ -23,8 +45,12 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["panel.html"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "panel.html"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }

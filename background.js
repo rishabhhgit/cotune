@@ -50,11 +50,33 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 });
 
+// A party belongs to a tab: the panel saves it in chrome.storage.session, so
+// when that tab opens a new page the content script can pick it back up.
+const sessionKey = (tabId) => `session:${tabId}`;
+const openKey = (tabId) => `open:${tabId}`;
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.type === "whoami") sendResponse(sender.tab?.id);
+  const tabId = sender.tab?.id;
+  if (msg.type === "whoami") {
+    sendResponse(tabId);
+  } else if (msg.type === "get-session" && tabId != null) {
+    chrome.storage.session
+      .get([sessionKey(tabId), openKey(tabId)])
+      .then((r) => {
+        const session = r[sessionKey(tabId)];
+        sendResponse(session ? { ...session, open: r[openKey(tabId)] } : null);
+      })
+      .catch(() => sendResponse(null));
+    return true; // async response
+  } else if (msg.type === "panel-open" && tabId != null) {
+    chrome.storage.session.set({ [openKey(tabId)]: !!msg.open }).catch(() => {});
+  }
 });
 
-chrome.tabs.onRemoved.addListener((tabId) => tabs.delete(tabId));
+chrome.tabs.onRemoved.addListener((tabId) => {
+  tabs.delete(tabId);
+  chrome.storage.session.remove([sessionKey(tabId), openKey(tabId)]).catch(() => {});
+});
 
 chrome.action.onClicked.addListener(async (tab) => {
   try {
