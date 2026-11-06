@@ -391,6 +391,24 @@
     }
   });
 
+  function teardown() {
+    if (panel) {
+      try {
+        panel.contentWindow?.postMessage({ cotune: "teardown" }, PANEL_ORIGIN);
+      } catch {}
+      try {
+        panel.src = "about:blank";
+      } catch {}
+      try {
+        panel.remove();
+      } catch {}
+      panel = null;
+    }
+  }
+
+  window.addEventListener("pagehide", teardown);
+  window.addEventListener("beforeunload", teardown);
+
   // Invite links look like <movie page>#cotune=<room code>.
   const invite = location.hash.match(/cotune=([a-z0-9-]+)/i);
   if (invite) {

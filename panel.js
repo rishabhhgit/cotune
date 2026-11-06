@@ -566,10 +566,50 @@ function showScreenError(err) {
   el.textContent = `Couldn't share your screen: ${err.message || err.name}`;
 }
 
-function watchScreenTrack(track) {
-  track.addEventListener("ended", () => {
-    if (screenTrack() === track) stopScreenShare(); // browser's "Stop sharing" bar
+let screenCheckInterval = null;
+
+function watchScreenStream(stream) {
+  if (!stream) return;
+  const onEnded = () => {
+    if (screenStream === stream) stopScreenShare();
+  };
+  for (const track of stream.getTracks()) {
+    track.addEventListener("ended", onEnded);
+    track.onended = onEnded;
+  }
+  stream.addEventListener("inactive", onEnded);
+  stream.oninactive = onEnded;
+  stream.addEventListener("removetrack", () => {
+    if (
+      screenStream === stream &&
+      (!stream.getVideoTracks().length ||
+        stream.getVideoTracks().every((t) => t.readyState === "ended"))
+    ) {
+      stopScreenShare();
+    }
   });
+  stream.addEventListener("addtrack", (e) => {
+    e.track.addEventListener("ended", onEnded);
+    e.track.onended = onEnded;
+  });
+
+  if (!screenCheckInterval) {
+    screenCheckInterval = setInterval(() => {
+      if (!screenStream) {
+        clearInterval(screenCheckInterval);
+        screenCheckInterval = null;
+        return;
+      }
+      const vTrack = screenStream.getVideoTracks()[0];
+      if (
+        !vTrack ||
+        vTrack.readyState === "ended" ||
+        screenStream.getTracks().every((t) => t.readyState === "ended")
+      ) {
+        stopScreenShare();
+      }
+    }, 400);
+  }
 }
 
 async function startScreenShare() {
@@ -591,7 +631,7 @@ async function startScreenShare() {
     return;
   }
   screenStream = stream;
-  watchScreenTrack(screenTrack());
+  watchScreenStream(screenStream);
   applyScreenSettings();
   addTile("me:screen", stream, `${myName} (screen)`, true, true);
   for (const id of peers.keys()) addScreenToPeer(id);
@@ -618,7 +658,7 @@ async function switchScreenSource() {
     next.getTracks().forEach((t) => t.stop()); // sharing was stopped while the picker was open
     return;
   }
-  watchScreenTrack(track);
+  watchScreenStream(next);
   for (const entry of peers.values()) {
     await entry.screenSender?.replaceTrack(track).catch(() => {});
   }
@@ -654,18 +694,38 @@ async function switchScreenSource() {
     }
   }
 
+  watchScreenStream(screenStream);
   applyScreenSettings();
 }
 
 function stopScreenShare({ notify = true } = {}) {
+  if (screenCheckInterval) {
+    clearInterval(screenCheckInterval);
+    screenCheckInterval = null;
+  }
   if (!screenStream) return;
   const stream = screenStream;
   screenStream = null;
-  stream.getTracks().forEach((t) => t.stop());
+  for (const t of stream.getTracks()) {
+    try {
+      t.stop();
+    } catch {}
+  }
+  const myTile = document.querySelector('.tile[data-id="me:screen"]');
+  if (myTile) {
+    const v = myTile.querySelector("video");
+    if (v) {
+      v.srcObject = null;
+      try {
+        v.load();
+      } catch {}
+    }
+  }
   removeTile("me:screen");
   for (const [id, entry] of peers) {
     if (entry.screenSender) {
       try {
+        entry.screenSender.track?.stop();
         entry.pc.removeTrack(entry.screenSender);
       } catch {
         // connection already closed
@@ -674,6 +734,7 @@ function stopScreenShare({ notify = true } = {}) {
     }
     if (entry.screenAudioSender) {
       try {
+        entry.screenAudioSender.track?.stop();
         entry.pc.removeTrack(entry.screenAudioSender);
       } catch {
         // connection already closed
@@ -1028,6 +1089,13 @@ function removeTile(id, onlyStream) {
   if (!tile) return;
   if (onlyStream && tile.querySelector("video")?.srcObject !== onlyStream) return;
   if (id === expandedId) collapseScreen();
+  const v = tile.querySelector("video");
+  if (v) {
+    v.srcObject = null;
+    try {
+      v.load();
+    } catch {}
+  }
   tile.remove();
   updateViewerParticipants();
 }
@@ -1145,19 +1213,32 @@ new ResizeObserver(() => {
   window.parent.postMessage({ cotune: "height", height: Math.ceil(document.body.scrollHeight) }, "*");
 }).observe(document.body);
 
-window.addEventListener("beforeunload", () => {
+function teardown() {
   // Tear down local media tracks and peer connections without broadcasting
   // "bye" / "inCall: false" so the tab session persists across page transitions.
   stopScreenShare({ notify: false });
   for (const id of [...peers.keys()]) {
     dropPeer(id);
   }
-  localStream?.getTracks().forEach((t) => t.stop());
+  localStream?.getTracks().forEach((t) => {
+    try {
+      t.stop();
+    } catch {}
+  });
   localStream = null;
   const socket = ws;
   ws = null;
-  socket?.close();
+  try {
+    socket?.close();
+  } catch {}
+}
+
+window.addEventListener("message", (e) => {
+  if (e.data?.cotune === "teardown") teardown();
 });
+window.addEventListener("beforeunload", teardown);
+window.addEventListener("pagehide", teardown);
+window.addEventListener("unload", teardown);
 
 connectBackground();
 
